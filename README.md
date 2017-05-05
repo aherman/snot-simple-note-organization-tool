@@ -28,3 +28,28 @@ Issues
 
 * Improve database layer (scalability, resiliency)
 * Apply front-end application framework
+
+## Interface Overview
+
+### Notes View
+A filterable list of all notes.
+
+![Screenshot of Notes View](https://cloud.githubusercontent.com/assets/1609988/25728857/5548cd7e-30f7-11e7-928f-868d51f9f4fb.png)
+
+### Note View
+Edit view of a single note.
+
+![Screenshot of Note View](https://cloud.githubusercontent.com/assets/1609988/25729206/7e1d709a-30f9-11e7-90ff-32f901f4f70d.png)
+
+### Tags View
+A filterable list of all tags.
+
+![Screenshot of Tags View](https://cloud.githubusercontent.com/assets/1609988/25729215/8bd8c81a-30f9-11e7-9e44-45c9e83a51d5.png)
+
+### Tag View
+Edit view of a single tag.
+
+![Screenshot of Tag View](https://cloud.githubusercontent.com/assets/1609988/25729210/8376ca6e-30f9-11e7-8136-6f69a4d3f0a0.png)
+
+
+
