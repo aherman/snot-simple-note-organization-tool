@@ -1,0 +1,34 @@
+<?!= includeFile('tagView_CSS'); ?>
+<label for="text-tag-name">Name
+<div class="input-group">
+  <input type="text" class="form-control" id="text-tag-name" aria-describedby="basic-addon3" value="<?=TagModel.TagName ? TagModel.TagName : '' ?>">
+</div>
+</label>
+<br>
+<br>
+<div> <strong> Number of notes with tag: </strong><a href='#' id="link-tag-numbernotes"><?=numberNotes ?></a></div>
+<br>
+<label for="dropdown-tag-color">Color
+<br>
+<div class="btn-group">
+    <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">Choose a color <span class="caret"></span></a>
+    <ul class="dropdown-menu">
+      <? for(var i = 0; i < colorOptions.length; i++) { ?>
+      <li style="width:100%; font-size:1.1em; color: white; background-color:<?= colorOptions[i].replace(/ /g,'') ?>"><a href="#" style="color: white" data-color="<?= colorOptions[i].replace(/ /g,'') ?>"><?= colorOptions[i] ?></a></li>
+    <? } ?>
+    </ul>
+  </div>
+</label>
+<br>
+<br>
+<div class="btn-group pull-left" role="group" aria-label="...">
+  <button type="button" class="btn btn-primary" id="button-save-tag" rowid=<?=TagModel.RowID ? TagModel.RowID : '' ?>>Save</button>
+  <button type="button" class="btn btn-default" id="button-cancel-tag">Cancel</button>
+</div>
+<? if(TagModel.RowID) { ?>
+<div class="btn-group pull-right" role="group" aria-label="...">
+  <button type="button" class="btn btn-danger" id="button-delete-tag" rowid=<?=TagModel.RowID?>>Delete</button>
+</div>
+<br><br>
+<div id="span-tagID"> <strong> TagID: </strong><?=TagModel.RowID?></div>
+<? } ?>

@@ -1,0 +1,89 @@
+<script type="text/javascript">
+/*
+ * TagsView class
+ */
+// Constructor
+function TagsView (scriptRunner) {
+  this.scriptRunner = scriptRunner;
+
+  this.data = null;
+
+  this.viewTagButton = null;
+  this.tagsTable = null;
+}
+// Class
+TagsView.prototype = {
+
+  constructor: TagsView,
+
+  loadView: function(dataObj, callbackFunc) {
+
+    var tagsView = this;
+    // Make call to server and pass back response
+    this.scriptRunner.withSuccessHandler(function(response) {
+      callbackFunc(response.html);
+      tagsView._initialize(response.data);
+    }).getTagsView(dataObj);
+  },
+
+  _initialize: function(data) {
+    this.data = data;
+    this._loadDataTable();
+  },
+
+  _loadDataTable: function() {
+    // Load Data table
+  this.tagsTable = $('#data-table-tags');
+
+  if(this.data && this.data.rows) {
+    this.tagsTable.DataTable( {
+        data: this.data.rows,
+        columns: this.data.columns,
+        "order": [[ 1, 'asc' ]], // Sort by Name ascending
+        "iDisplayLength": 50,
+
+        "columnDefs": [
+            {
+                // Customize rendering of 'View/Edit' column to add button link
+                "targets": 0,
+                "render": function ( data, type, row ) {
+                    return  '<button type="button" class="btn btn-default btn-sm button-view-note" rowid=' + data + ' onclick="uiApp.loadTagView(' + data + ')"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>'
+                }
+            },
+            {
+                // Customize rendering of 'Tags' column to add styling
+                "targets": 1,
+                "render": function ( data, type, row ) {
+                  return '<span class="label label-default" style="font-size: 1.05em; background-color:' + row[2].replace(/ /g,'') + '">' + data + '</span>';
+                }
+            },
+            {
+                // Customize rendering of 'Color' column to add styling
+                "targets": 2,
+                "render": function ( data, type, row ) {
+                  return data ? '<span style="color:' + data.replace(/ /g,'') + '">' + data + '</span>' : '';
+                }
+            },
+            {
+                // Customize rendering of 'Dates' column to add styling
+                "targets": [3,4],
+                "render": function ( data, type, row ) {
+                  var DateObj = new Date(data);
+                  var dateFormat = uiApp.getDayOfWeekStringValue(DateObj.getDay()) + ' ' + uiApp.getMonthOfYearStringValue(DateObj.getMonth()) + ' ' + DateObj.getDate() + ', ' + DateObj.getFullYear()
+                    + ' ' + DateObj.getHours() + ':' + DateObj.getMinutes() + ':' + DateObj.getSeconds();
+                  return dateFormat;
+                }
+            }
+        ]
+    } );
+
+    // Add search text highlighting
+    var tagsView = this;
+    this.tagsTable.DataTable().on( 'draw', function () {
+      tagsView.tagsTable.unhighlight();
+      tagsView.tagsTable.highlight($('input').val().split(' '));
+    } );
+   }
+  }
+};
+</script>

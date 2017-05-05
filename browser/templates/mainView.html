@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SNOT Simple Note Organization Tool</title>
+    <base target="_top">
+    <?!= includeFile('mainView_CSS'); ?>
+  </head>
+  <body class='bodyClass'>
+   <div id="custom-bootstrap-menu" class="navbar navbar-default " role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <span class="navbar-brand glyphicon glyphicon-tasks"></span>
+          <span class="navbar-brand">SNOT</span>
+          <span class="navbar-brand" style="font-size:0.8em">(Simple Note Organization Tool)</span>
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-menubuilder"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="collapse navbar-collapse navbar-menubuilder">
+          <ul class="nav navbar-nav ">
+            <li class="active" id="loadNotesView"><a href="#"><span class="glyphicon glyphicon-th-list"></span> Notes</a></li>
+            <li id="loadTagsView"><a href="#"><span class="glyphicon glyphicon-tags"></span> Tags</a></li>
+            <li id="button-new-note"><a href="#"><span class="glyphicon glyphicon-plus"></span> New Note</a></li>
+          </ul>
+          <p class="navbar-text navbar-right">Signed in as <b><?= UserModel.Email ?></b></p>
+        </div>
+      </div>
+   </div>
+
+<div id="alert-container" class="alert alert-success alert-dismissible hidden" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <div id="alert-text"></div>
+</div>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <div id="contentContainer" data-options-action="<?=JSON.stringify(action)?>" data-options-parameters="<?=JSON.stringify(parameters)?>">
+      <div id="loading-text">
+        <span class="glyphicon glyphicon-repeat fast-right-spinner"></span>
+        Loading
+      </div>
+    </div>
+    <?!= includeFile('uiApp_JS'); ?>
+    <?!= includeFile('mainView_JS'); ?>
+    <?!= includeFile('notesView_JS'); ?>
+    <?!= includeFile('noteView_JS'); ?>
+    <?!= includeFile('tagsView_JS'); ?>
+    <?!= includeFile('tagView_JS'); ?>
+  </div>
+</div>
+  </body>
+</html>

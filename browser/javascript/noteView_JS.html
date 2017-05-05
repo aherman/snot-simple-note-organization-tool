@@ -1,0 +1,152 @@
+<script type="text/javascript">
+function initializeNoteView(noteData) {
+
+}
+</script>
+<script type="text/javascript">
+/*
+ * NoteView class
+ */
+// Constructor
+function NoteView (scriptRunner) {
+  this.scriptRunner = scriptRunner;
+
+  this.data = null;
+
+  this.selectNoteTags = null;
+  this.buttonSaveNote = null;
+  this.buttonDeleteNote = null;
+  this.buttonCancelNote = null;
+}
+// Class
+NoteView.prototype = {
+
+  constructor: NoteView,
+
+  loadView: function(dataObj, callbackFunc) {
+    var noteView = this;
+    // Make call to server and pass back response
+    this.scriptRunner.withSuccessHandler(function(response) {
+      callbackFunc(response.html);
+      noteView._initialize(response.data);
+    }).getNoteView(dataObj);
+  },
+
+  _onSaveNote: function(response, saveButton) {
+   var success = false;
+   var alertMessage = '';
+   try {
+     var data = JSON.parse(response);
+     success = data.success;
+     alertMessage = (success ? "Success: " : "Error 1: ") + data.message;
+  //   this.noteView.buttonSaveNote.attr('rowid', data.rowID);
+
+     $('#button-save-note').attr('rowid', data.rowID);
+     $('#button-save-note').html('Save');
+
+     $('#span-noteID').html("NoteID: " + data.rowID);
+   } catch (err) {
+     success = false;
+     alertMessage = "Error 2: " + response;
+   }
+   // Display response
+   uiApp.setAlertMessage(success, alertMessage);
+
+   // Reset Save button value
+//   $('#button-save-note').innerHTML = 'Save';
+  },
+
+  _onDeleteNote: function(response, deleteButton) {
+   var alertMessage = '';
+   var success = false;
+   try {
+     var data = JSON.parse(response);
+     success = data.success;
+     alertMessage = (success ? "Success: " : "Error 1: ") + data.message;
+   } catch (err) {
+     success = false;
+     alertMessage = "Error 2: " + response;
+   }
+   // Display response
+   uiApp.setAlertMessage(success, alertMessage);
+  },
+
+  _initialize: function(data) {
+    this.data = data;
+    this._initializeTagSelect();
+    this._initializeSaveButton();
+    this._initializeDeleteButton();
+    this._initializeCancelButton();
+
+  //  this._onDeleteNote(JSON.stringify({success: true, message: 'Test message'}));
+  },
+
+  _initializeTagSelect: function() {
+    this.selectNoteTags = $('#select-note-tags');
+
+    this.selectNoteTags.select2({
+      tags: true,
+      tokenSeparators: [','],
+      placeholder: "Separate by comma or Enter key",
+      data: this.data.options
+      }).on('change', function (evt) {
+    });
+
+    this.selectNoteTags.select2().val(this.data.optionsSelected).trigger("change.select2");
+  },
+
+  _initializeSaveButton: function() {
+    this.buttonSaveNote = $('#button-save-note');
+
+    var noteView = this;
+
+    this.buttonSaveNote.click(function(){
+      uiApp.clearAlertMessage();
+
+      // Set temp Save button value
+      this.innerHTML = '<span class="glyphicon glyphicon-repeat fast-right-spinner"></span> Saving';
+
+      // Load selected note
+      var tags = $('#select-note-tags').val();
+      var NoteModel = {};
+      NoteModel.RowID = this.getAttribute('rowid');
+      NoteModel.Tags = tags ? tags : '';
+      NoteModel.NoteName = $('#text-note-name').val();
+      NoteModel.Link = $('#text-note-link').val();
+      NoteModel.Data = $('#text-note-data').val();
+
+  //    var onSaveNote = noteView._onSaveNote;
+  //    onSaveNote.noteView = noteView;
+
+      var scriptRunner = google.script.run.withFailureHandler(noteView._onSaveNote);
+      scriptRunner.withSuccessHandler(noteView._onSaveNote).withUserObject(this).saveNote(NoteModel);
+    });
+  },
+
+  _initializeDeleteButton: function() {
+    this.buttonDeleteNote = $('#button-delete-note');
+
+    var noteView = this;
+
+    this.buttonDeleteNote.click(function(){
+      // Load selected note
+      var NoteModel = {};
+      NoteModel.RowID = this.getAttribute('rowid');
+      var scriptRunner = google.script.run.withFailureHandler(noteView._onDeleteNote);
+      scriptRunner.withSuccessHandler(noteView._onDeleteNote).withUserObject(this).deleteNote(NoteModel);
+    });
+  },
+
+  _initializeCancelButton: function() {
+    this.buttonCancelNote = $('#button-cancel-note');
+
+    var noteView = this;
+
+    this.buttonCancelNote.click(function(){
+      uiApp.loadNotesView();
+      // TODO - implement note canceling
+    });
+  }
+
+};
+</script>

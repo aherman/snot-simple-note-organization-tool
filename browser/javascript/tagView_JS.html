@@ -1,0 +1,159 @@
+<script type="text/javascript">
+/*
+ * TagView class
+ */
+// Constructor
+function TagView (scriptRunner) {
+  this.scriptRunner = scriptRunner;
+
+  this.data = null;
+
+  this.buttonSaveTag = null;
+  this.buttonDeleteTag = null;
+  this.buttonCancelTag = null;
+
+  this.color = '';
+}
+// Class
+TagView.prototype = {
+
+  constructor: TagView,
+
+  loadView: function(dataObj, callbackFunc) {
+    var tagView = this;
+    // Make call to server and pass back response
+    this.scriptRunner.withSuccessHandler(function(response) {
+      callbackFunc(response.html);
+      tagView._initialize(response.data);
+    }).getTagView(dataObj);
+  },
+
+  _onSaveTag: function(response) {
+   console.log(response);
+   var success = false;
+   var alertMessage = '';
+   try {
+     var data = JSON.parse(response);
+     success = data.success;
+     alertMessage = (success ? "Success: " : "Error 1: ") + data.message;
+     $('#button-save-tag').attr('rowid', data.rowID);
+     $('#span-tagID').html("TagID: " + data.rowID);
+   } catch (err) {
+     success = false;
+     alertMessage = "Error 2: " + response;
+     console.log(err);
+   }
+   // Display response
+   uiApp.setAlertMessage(success, alertMessage);
+  },
+
+  _onDeleteTag: function(response) {
+  console.log(response);
+   var alertMessage = '';
+   var success = false;
+   try {
+     var data = JSON.parse(response);
+     success = data.success;
+     alertMessage = (success ? "Success: " : "Error 1: ") + data.message;
+   } catch (err) {
+     success = false;
+     alertMessage = "Error 2: " + response;
+     console.log(err);
+   }
+   // Display response
+   uiApp.setAlertMessage(success, alertMessage);
+  },
+
+  _initialize: function(data) {
+    this.data = data;
+    this._initializeNotesLink();
+    this._initializeColorPicker();
+    this._initializeSaveButton();
+    this._initializeDeleteButton();
+    this._initializeCancelButton();
+  },
+
+  _initializeNotesLink: function() {
+
+    var tagView = this;
+
+    $("#link-tag-numbernotes").click(function(e){
+      e.preventDefault();
+
+      uiApp.loadNotesView({'tagID': tagView.data.TagModel.RowID});
+      });
+  },
+
+  _initializeColorPicker: function() {
+
+    var tagView = this;
+
+  console.log(this.data.TagModel.Color);
+    $(".dropdown-menu li a").click(function(e){
+      e.preventDefault();
+
+      var selText = $(this).text();
+
+      // Set the display value based on what was chosen
+      $(this).parents('.btn-group').find('.dropdown-toggle').html(selText+' <span class="caret"></span>');
+
+      tagView.color = selText;
+      console.log(tagView.color);
+
+      $(".dropdown-toggle").css('background-color', tagView.color.replace(/ /g,''));
+      $(".dropdown-toggle").css('border-color', tagView.color.replace(/ /g,''));
+    });
+    // Set the default color
+    console.log('Color: ' + this.data.TagModel.Color);
+  //  console.log($(".dropdown-menu li a").filter("[data-color='" + this.data.TagModel.Color + "']"));
+    $(".dropdown-menu li a").filter("[data-color=" + this.data.TagModel.Color.replace(/ /g,'') + "]").trigger("click");
+  },
+
+  _initializeSaveButton: function() {
+    this.buttonSaveTag = $('#button-save-tag');
+
+    var tagView = this;
+
+    this.buttonSaveTag.click(function(){
+      console.log("RowID: " + this.getAttribute('rowid'));
+      // Load selected tag
+      var TagModel = {};
+      TagModel.RowID = this.getAttribute('rowid');
+      TagModel.TagName = $('#text-tag-name').val();
+   //   TagModel.Color = $('#text-tag-color').val();
+      TagModel.Color = tagView.color;
+      console.log($(".dropdown-toggle").css('background-color'));
+      console.log(TagModel);
+
+      var scriptRunner = google.script.run.withFailureHandler(tagView._onSaveTag);
+      scriptRunner.withSuccessHandler(tagView._onSaveTag).saveTag(TagModel);
+    });
+  },
+
+  _initializeDeleteButton: function() {
+    this.buttonDeleteTag = $('#button-delete-tag');
+
+    var tagView = this;
+
+    this.buttonDeleteTag.click(function(){
+      console.log("RowID: " + this.getAttribute('rowid'));
+      // Load selected tag
+      var TagModel = {};
+      TagModel.RowID = this.getAttribute('rowid');
+    console.log(TagModel);
+      var scriptRunner = google.script.run.withFailureHandler(tagView._onDeleteTag);
+      scriptRunner.withSuccessHandler(tagView._onDeleteTag).deleteTag(TagModel);
+    });
+  },
+
+  _initializeCancelButton: function() {
+    this.buttonCancelTag = $('#button-cancel-tag');
+
+    this.buttonCancelTag.click(function(){
+      console.log('Cancel');
+      uiApp.loadTagsView();
+    });
+  }
+
+};
+</script>

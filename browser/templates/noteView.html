@@ -1,0 +1,37 @@
+<?!= includeFile('noteView_CSS'); ?>
+<label for="text-note-name">Name
+<div class="input-group">
+  <input type="text" class="form-control" id="text-note-name" aria-describedby="basic-addon3" value="<?=NoteModel.NoteName ? NoteModel.NoteName : '' ?>">
+</div>
+</label>
+<br>
+<label for="note-link">Link
+<div class="input-group">
+  <input type="text" class="form-control" id="text-note-link" aria-describedby="basic-addon3" value="<?=NoteModel.Link ? NoteModel.Link : '' ?>">
+  <? if(NoteModel.Link) { ?>
+  <span class="input-group-addon" id="open-link"><a href="<?=NoteModel.Link?>" target="_blank">Open in New Tab</a></span>
+  <? } ?>
+</div>
+</label>
+<br>
+<label for="select-note-tags">Tag(s)
+   <select id="select-note-tags" data-options="<?=JSON.stringify(options)?>" data-options-selected="<?=JSON.stringify(optionsSelected)?>" data-tags="true" data-placeholder="Separate by comma or Enter key" multiple="multiple">
+</select>
+</label>
+<br>
+<label for="text-data">Data</label>
+<div class="input-group">
+  <textarea class="form-control" id="text-note-data" aria-describedby="basic-addon3" rows=5><?= NoteModel.Data ? NoteModel.Data : '' ?></textarea>
+</div>
+<br>
+<div class="btn-group pull-left" role="group" aria-label="...">
+  <button type="button" class="btn btn-primary" id="button-save-note" rowid=<?=NoteModel.RowID ? NoteModel.RowID : '' ?>>Save</button>
+  <button type="button" class="btn btn-default" id="button-cancel-note">Cancel</button>
+</div>
+<? if(NoteModel.RowID) { ?>
+<div class="btn-group pull-right" role="group" aria-label="...">
+  <button type="button" class="btn btn-danger" id="button-delete-note" rowid=<?=NoteModel.RowID?>>Delete</button>
+</div>
+<br><br>
+<div id="span-noteID"> <strong> NoteID: </strong><?=NoteModel.RowID?></div>
+<? } ?>
